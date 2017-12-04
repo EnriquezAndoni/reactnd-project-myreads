@@ -40,6 +40,10 @@ class ListBooks extends Component {
     this.setState({shelves})
   }
 
+  controlChange = (event) => {
+    console.log(event.target.value)
+  }
+
   render() {
     const {shelves} = this.state
     console.log(shelves)
@@ -63,7 +67,7 @@ class ListBooks extends Component {
                           backgroundImage: `url(${book.imageLinks.thumbnail})`
                         }}/>
                         <div className='book-shelf-changer'>
-                          <select>
+                          <select id='control' onChange={this.controlChange} value={book.shelf}>
                             <option value="none" disabled>Move to...</option>
                             <option value="currentlyReading">Currently Reading</option>
                             <option value="wantToRead">Want to Read</option>
@@ -76,7 +80,6 @@ class ListBooks extends Component {
                       {book.authors.map((author, index) => (
                         <div key={index} className="book-authors">{author}</div>
                       ))}
-
                     </div>
                   </li>
                 ))}
