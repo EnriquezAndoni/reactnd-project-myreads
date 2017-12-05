@@ -12,8 +12,9 @@ class ListBooks extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    for (const book of newProps.books) {
+    newProps.books.forEach((book, index, books) => {
       const id = ProperCase(book.shelf)
+      books[index].shelf = id
       if (!this.state.shelves.has(id)) {
         this.state.shelves.set(id, {books: [book]})
       } else {
@@ -21,7 +22,7 @@ class ListBooks extends Component {
         shelf.books.push(book)
         this.state.shelves.set(id, shelf)
       }
-    }
+    })
   }
 
   controlChange = (event, book, last) => {
@@ -84,8 +85,8 @@ class ListBooks extends Component {
                       <div className='book-shelf-changer'>
                         <select
                           id='control'
-                          onChange={(event) => this.controlChange(event, book, ProperCase(book.shelf))}
-                          value={ProperCase(book.shelf)}>
+                          onChange={(event) => this.controlChange(event, book, book.shelf)}
+                          value={book.shelf}>
                           <option value="none" disabled>Move to...</option>
                           {this.renderControlOptions(shelves)}
                           <option value="none">None</option>
