@@ -12,7 +12,8 @@ class BooksApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      shelves: new Map()
+      shelves: new Map(),
+      books: []
     }
   }
 
@@ -36,12 +37,15 @@ class BooksApp extends React.Component {
       })
     ))).then(() => {
       this.setState({shelves: SortedMap(shelves)})
+    }).catch((error) => {
+      console.log(error)
     })
   }
 
   bookControl = (event, book, last) => {
     const shelves = this.state.shelves
     const id = event.target.value
+
     if (shelves.has(last)) {
       const shelf = shelves.get(last)
       shelf.books.forEach((storedBook, index, books) => {
@@ -52,11 +56,11 @@ class BooksApp extends React.Component {
           BooksAPI.update(books[index], serverId).then(() => {
             // Update shelf where the new book is stored & update the shelf id
             books[index].shelf = id
-            if (id !== 'none' && shelves.has(id)) {
+            if (shelves.has(id)) {
               const newShelf = shelves.get(id)
               newShelf.books.push(books[index])
               shelves.set(id, newShelf)
-            } else {
+            } else if (id !== 'none'){
               shelves.set(id, {books: [books[index]]})
             }
 
@@ -73,11 +77,44 @@ class BooksApp extends React.Component {
           })
         }
       })
+    } else {
+      const serverId = Camelize(id)
+      book.shelf = serverId
+      BooksAPI.update(book, serverId).then(() => {
+        // Update shelf where the new book is stored & update the shelf id
+        book.shelf = id
+        if (shelves.has(id)) {
+          const newShelf = shelves.get(id)
+          newShelf.books.push(book)
+          shelves.set(id, newShelf)
+
+        } else if (id !== 'none'){
+          shelves.set(id, {books: [book]})
+        }
+
+        // Update state
+        this.setState({shelves: SortedMap(shelves)})
+      })
     }
   }
 
+  searchBooks = (query, max = 20) => {
+    let helper = []
+    BooksAPI.search(query, max).then((books) => {
+      books.forEach((book, index, books) => {
+        if (book.shelf === undefined) {
+          books[index].shelf = ProperCase('none')
+        } else {
+          books[index].shelf = ProperCase(book.shelf)
+        }
+        helper.push(books[index])
+      })
+      this.setState({books: helper})
+    })
+  }
+
   render() {
-    const {shelves} = this.state
+    const {shelves, books} = this.state
     return (
       <div className='app'>
         <Route exact path='/' render={() => (
@@ -87,7 +124,12 @@ class BooksApp extends React.Component {
           />
         )}/>
         <Route exact path='/search' render={() => (
-          <Search/>
+          <Search
+            shelves={shelves}
+            books={books}
+            onSearchBooks={this.searchBooks}
+            onControlChange={this.bookControl}
+          />
         )}/>
       </div>
     )
