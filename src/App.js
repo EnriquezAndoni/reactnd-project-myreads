@@ -35,7 +35,7 @@ class BooksApp extends React.Component {
         }
       })
     ))).then(() => {
-      this.setState({shelves})
+      this.setState({shelves: SortedMap(shelves)})
     })
   }
 
@@ -78,7 +78,6 @@ class BooksApp extends React.Component {
 
   render() {
     const {shelves} = this.state
-    console.log(shelves)
     return (
       <div className='app'>
         <Route exact path='/' render={() => (

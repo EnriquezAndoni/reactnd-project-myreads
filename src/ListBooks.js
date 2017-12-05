@@ -24,6 +24,7 @@ class ListBooks extends Component {
   renderShelves = (shelves, onControlChange) => {
     let paint = []
     for (const shelf of shelves) {
+      console.log(shelf)
       const [title, object] = shelf
       paint.push(
         <div key={title} className='bookshelf'>

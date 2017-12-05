@@ -6,7 +6,8 @@ export default (map) => {
     keys.push(key)
   })
 
-  keys.sort().forEach((value, key) => {
+  // Alphabetically
+  keys.sort().forEach((key) => {
     sortedMap.set(key, map.get(key))
   })
 
