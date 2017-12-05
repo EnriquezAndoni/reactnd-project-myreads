@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
+import * as BooksAPI from './BooksAPI'
 import ProperCase from './utils/ProperCase'
+import Camelize from './utils/Camelize'
 
 class ListBooks extends Component {
   static propTypes = {
@@ -34,12 +36,17 @@ class ListBooks extends Component {
       shelf.books.forEach((storedBook, index, books) => {
         if (book === storedBook) {
           // Update shelf where the new book is stored & update the shelf id
+          books[index].shelf = id
           if (id !== 'none') {
-            books[index].shelf = id
             const newShelf = shelves.get(id)
             newShelf.books.push(books[index])
             shelves.set(id, newShelf)
           }
+
+          // Update the server
+          const serverId = Camelize(id)
+          books[index].shelf = serverId
+          BooksAPI.update(books[index], serverId)
 
           // Remove from the previous shelf
           shelf.books.splice(index, 1)
