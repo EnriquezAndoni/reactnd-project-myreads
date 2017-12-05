@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import {Link} from 'react-router-dom'
 import ProperCase from './utils/ProperCase'
 
 class ListBooks extends Component {
@@ -25,7 +26,7 @@ class ListBooks extends Component {
     })
   }
 
-  controlChange = (event, book, last) => {
+  bookControlChange = (event, book, last) => {
     let shelves = this.state.shelves
     const id = event.target.value
     if (shelves.has(last)) {
@@ -85,7 +86,7 @@ class ListBooks extends Component {
                       <div className='book-shelf-changer'>
                         <select
                           id='control'
-                          onChange={(event) => this.controlChange(event, book, book.shelf)}
+                          onChange={(event) => this.bookControlChange(event, book, book.shelf)}
                           value={book.shelf}>
                           <option value="none" disabled>Move to...</option>
                           {this.renderControlOptions(shelves)}
@@ -101,6 +102,9 @@ class ListBooks extends Component {
                 </li>
               ))}
             </ol>
+          </div>
+          <div className="open-search">
+            <Link to='/search'/>
           </div>
         </div>
       )
