@@ -33,12 +33,12 @@ class ListBooks extends Component {
       shelf.books.forEach((storedBook, index, books) => {
         if (book === storedBook) {
           // Update shelf where the new book is stored & update the shelf id
-          const newShelf = shelves.get(id)
-          books[index].shelf = id
-          console.log(id)
-          console.log(books[index])
-          newShelf.books.push(books[index])
-          shelves.set(id, newShelf)
+          if (id !== 'none') {
+            books[index].shelf = id
+            const newShelf = shelves.get(id)
+            newShelf.books.push(books[index])
+            shelves.set(id, newShelf)
+          }
 
           // Remove from the previous shelf
           shelf.books.splice(index, 1)
