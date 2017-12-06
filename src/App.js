@@ -3,8 +3,6 @@ import {Route} from 'react-router-dom'
 import ListBooks from './ListBooks'
 import Search from './Search'
 import * as BooksAPI from './BooksAPI'
-import ProperCase from './utils/ProperCase'
-import Camelize from './utils/Camelize'
 import SortedMap from './utils/SortMap'
 import './App.css'
 
@@ -25,8 +23,7 @@ class BooksApp extends React.Component {
     const shelves = this.state.shelves
     BooksAPI.getAll().then((books => (
       books.forEach((book, index, books) => {
-        const id = ProperCase(book.shelf)
-        books[index].shelf = id
+        const id = books[index].shelf
         if (!shelves.has(id)) {
           shelves.set(id, {books: [book]})
         } else {
@@ -37,8 +34,6 @@ class BooksApp extends React.Component {
       })
     ))).then(() => {
       this.setState({shelves: SortedMap(shelves)})
-    }).catch((error) => {
-      console.log(error)
     })
   }
 
@@ -49,51 +44,52 @@ class BooksApp extends React.Component {
     if (shelves.has(last)) {
       const shelf = shelves.get(last)
       shelf.books.forEach((storedBook, index, books) => {
-        if (book === storedBook) {
-          // Update the server
-          const serverId = Camelize(id)
-          books[index].shelf = serverId
-          BooksAPI.update(books[index], serverId).then(() => {
-            // Update shelf where the new book is stored & update the shelf id
-            books[index].shelf = id
-            if (shelves.has(id)) {
-              const newShelf = shelves.get(id)
-              newShelf.books.push(books[index])
-              shelves.set(id, newShelf)
-            } else if (id !== 'none'){
-              shelves.set(id, {books: [books[index]]})
-            }
-
-            // Remove from the previous shelf
-            shelf.books.splice(index, 1)
-            if (shelf.books.length !== 0) {
-              shelves.set(last, {books: shelf.books})
-            } else {
-              shelves.delete(last)
-            }
-
-            // Update state
-            this.setState({shelves: SortedMap(shelves)})
-          })
+        if (book.id === storedBook.id) {
+          books[index].shelf = id
+          // Actualizar el state de books
+          // Peta al cambiar dos veces en el finder
+          this.updateBooksState(id, book)
+          this.updateBook(book, id, shelf, index, last)
         }
       })
-    } else {
-      const serverId = Camelize(id)
-      book.shelf = serverId
-      BooksAPI.update(book, serverId).then(() => {
-        // Update shelf where the new book is stored & update the shelf id
-        book.shelf = id
-        if (shelves.has(id)) {
-          const newShelf = shelves.get(id)
-          newShelf.books.push(book)
-          shelves.set(id, newShelf)
+    } else if (last === 'none') {
+      book.shelf = id
+      this.updateBook(book, id)
+    }
+  }
 
-        } else if (id !== 'none'){
-          shelves.set(id, {books: [book]})
+  updateBook = (book, id, shelf = null, index = null, last = null) => {
+    const shelves = this.state.shelves
+    BooksAPI.update(book, id).then(() => {
+      if (shelves.has(id)) {
+        const newShelf = shelves.get(id)
+        newShelf.books.push(book)
+        shelves.set(id, newShelf)
+      } else if (id !== 'none') {
+        shelves.set(id, {books: [book]})
+      }
+
+      if (shelf !== null) {
+        shelf.books.splice(index, 1)
+        if (shelf.books.length !== 0) {
+          shelves.set(last, {books: shelf.books})
+        } else {
+          shelves.delete(last)
         }
+      }
 
-        // Update state
-        this.setState({shelves: SortedMap(shelves)})
+      this.setState({shelves: SortedMap(shelves)})
+    })
+  }
+
+  updateBooksState = (shelfId, compareBook) => {
+    const books  = this.state.books
+    if (books.length > 0) {
+      books.forEach((storedBook, index, booksHelper) => {
+        if (storedBook.id === compareBook.id) {
+          booksHelper[index].shelf = shelfId
+          this.setState({books: booksHelper})
+        }
       })
     }
   }
@@ -101,15 +97,13 @@ class BooksApp extends React.Component {
   searchBooks = (query, max = 20) => {
     let helper = []
     BooksAPI.search(query, max).then((books) => {
-      books.forEach((book, index, books) => {
-        if (book.shelf === undefined) {
-          books[index].shelf = ProperCase('none')
-        } else {
-          books[index].shelf = ProperCase(book.shelf)
-        }
-        helper.push(books[index])
+      books.forEach((book) => {
+        BooksAPI.get(book.id).then((book) => {
+          helper.push(book)
+        }).then(() => {
+          this.setState({books: helper})
+        })
       })
-      this.setState({books: helper})
     })
   }
 

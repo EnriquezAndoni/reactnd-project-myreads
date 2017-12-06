@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import ProperCase from './utils/ProperCase'
 
 class Books extends Component {
   static propTypes = {
@@ -12,9 +13,20 @@ class Books extends Component {
     let controls = []
     for (const shelf of shelves) {
       const [title] = shelf
-      if (title !== 'Currently Reading' && title !== 'Want To Read' && title !== 'Read') controls.push(<option key={title} value={title}>{title}</option>)
+      if (title !== 'currentlyReading' && title !== 'wantToRead' && title !== 'read')
+        controls.push(<option key={title} value={title}>{ProperCase(title)}</option>)
     }
     return controls
+  }
+
+  renderAuthors = (book) => {
+    let authors = []
+    if (book.authors !== undefined) {
+      book.authors.map((author, index) => (
+        authors.push(<div key={index} className="book-authors">{author}</div>)
+      ))
+    }
+    return authors
   }
 
   render() {
@@ -25,9 +37,7 @@ class Books extends Component {
           <li key={book.id}>
             <div className='book'>
               <div className='book-top'>
-                <div className='book-cover' style={{
-                  width: 128,
-                  height: 193,
+                <div className='book-cover' style={{width: 128, height: 193,
                   backgroundImage: `url(${book.imageLinks.thumbnail})`
                 }}/>
                 <div className='book-shelf-changer'>
@@ -35,19 +45,17 @@ class Books extends Component {
                     id='control'
                     onChange={(event) => onControlChange(event, book, book.shelf)}
                     value={book.shelf}>
-                    <option value="none" disabled>Move to...</option>
-                    <option value="Currently Reading">Currently Reading</option>
-                    <option value="Want To Read">Want To Read</option>
-                    <option value="Read">Read</option>
+                    <option disabled>Move to...</option>
+                    <option value="currentlyReading">Currently Reading</option>
+                    <option value="read">Read</option>
+                    <option value="wantToRead">Want To Read</option>
                     {this.renderControlOptions(shelves)}
-                    <option value="None">None</option>
+                    <option value="none">None</option>
                   </select>
                 </div>
               </div>
               <div className="book-title">{book.title}</div>
-              {book.authors.map((author, index) => (
-                <div key={index} className="book-authors">{author}</div>
-              ))}
+              {this.renderAuthors(book)}
             </div>
           </li>
         ))}

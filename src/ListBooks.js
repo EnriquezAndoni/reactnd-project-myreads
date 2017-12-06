@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import Books from './Books'
+import ProperCase from './utils/ProperCase'
 
 class ListBooks extends Component {
   static propTypes = {
@@ -15,7 +16,7 @@ class ListBooks extends Component {
       const [title, object] = shelf
       paint.push(
         <div key={title} className='bookshelf'>
-          <h2 className='book-shelf-title'>{title}</h2>
+          <h2 className='book-shelf-title'>{ProperCase(title)}</h2>
           <div className='bookshelf-books'>
             <Books shelves={shelves} books={object.books} onControlChange={onControlChange}/>
           </div>
