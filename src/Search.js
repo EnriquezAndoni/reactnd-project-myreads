@@ -27,12 +27,17 @@ class Search extends Component {
 
   /**
    * @description Update the query state
+   * The setTimeout can be deleted if we want to perform a call every time the query changes
    * @param {string} query - The text introduced in the search input
    */
   updateQuery = (query) => {
     const {onSearchBooks} = this.props
     this.setState({query: query})
-    onSearchBooks(query)
+    setTimeout(() => {
+      if (this.state.query === query) {
+        onSearchBooks(query)
+      }
+    }, 200)
   }
 
   /**
