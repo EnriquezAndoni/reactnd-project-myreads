@@ -1,3 +1,8 @@
+/**
+ * @description Sort the shelves alphabetically
+ * @param {map} map - The shelves
+ * @returns {object} the sorted new map
+ */
 export default (map) => {
   let keys = []
   let sortedMap = new Map()

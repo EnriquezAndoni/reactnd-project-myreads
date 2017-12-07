@@ -3,12 +3,38 @@ import PropTypes from 'prop-types'
 import ProperCase from './utils/ProperCase'
 
 class Books extends Component {
+  /**
+   * @description Define the props needed by the component
+   */
   static propTypes = {
     shelves: PropTypes.object.isRequired,
     books: PropTypes.array.isRequired,
     onControlChange: PropTypes.func.isRequired
   }
 
+  /**
+   * @description Render the image for each book, it checks if the book has an image
+   * @param {object} book - The book that has to be rendered
+   * @returns {object} The div with the image if the book contains a thumbnail
+   */
+  renderThumbnail = (book) => {
+    let thumbnail
+    if (book.imageLinks !== undefined) {
+      thumbnail =
+        <div key={book.id}
+          className='book-cover'
+          style={{width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})`
+      }}/>
+    }
+    return thumbnail
+  }
+
+  /**
+   * @description Render each option depending of the shelves options
+   * So, if the API introduces a new option (shelf) it's going to be rendered
+   * @param {object} shelves - The shelves object contains each shelf
+   * @returns {object} The option(s) with the new option(s)
+   */
   renderControlOptions = (shelves) => {
     let controls = []
     for (const shelf of shelves) {
@@ -19,6 +45,11 @@ class Books extends Component {
     return controls
   }
 
+  /**
+   * @description Render the authors of the book
+   * @param {object} book - The book that has to be rendered
+   * @returns {object} The div(s) with the authors
+   */
   renderAuthors = (book) => {
     let authors = []
     if (book.authors !== undefined) {
@@ -29,6 +60,9 @@ class Books extends Component {
     return authors
   }
 
+  /**
+   * @description Render the books -> the thumbnail, the authors and the options
+   */
   render() {
     const {shelves, books, onControlChange} = this.props
     return(
@@ -37,9 +71,7 @@ class Books extends Component {
           <li key={book.id}>
             <div className='book'>
               <div className='book-top'>
-                <div className='book-cover' style={{width: 128, height: 193,
-                  backgroundImage: `url(${book.imageLinks.thumbnail})`
-                }}/>
+                {this.renderThumbnail(book)}
                 <div className='book-shelf-changer'>
                   <select
                     id='control'

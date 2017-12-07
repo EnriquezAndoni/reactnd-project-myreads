@@ -4,6 +4,9 @@ import PropTypes from 'prop-types'
 import Books from './Books'
 
 class Search extends Component {
+  /**
+   * @description Define the props needed by the component
+   */
   static propTypes = {
     shelves: PropTypes.object.isRequired,
     books: PropTypes.array.isRequired,
@@ -11,6 +14,10 @@ class Search extends Component {
     onControlChange: PropTypes.func.isRequired
   }
 
+  /**
+   * @description Initialize the state
+   * @constructor
+   */
   constructor(props) {
     super(props)
     this.state = {
@@ -18,12 +25,19 @@ class Search extends Component {
     }
   }
 
+  /**
+   * @description Update the query state
+   * @param {string} query - The text introduced in the search input
+   */
   updateQuery = (query) => {
     const {onSearchBooks} = this.props
     this.setState({query: query})
     onSearchBooks(query)
   }
 
+  /**
+   * @description Render the search input and the books that are search
+   */
   render() {
     const {query} = this.state
     const {shelves, books, onControlChange} = this.props

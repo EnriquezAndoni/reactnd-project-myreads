@@ -5,11 +5,20 @@ import Books from './Books'
 import ProperCase from './utils/ProperCase'
 
 class ListBooks extends Component {
+  /**
+   * @description Define the props needed by the component
+   */
   static propTypes = {
     shelves: PropTypes.object.isRequired,
     onControlChange: PropTypes.func.isRequired
   }
 
+  /**
+   * @description Render each shelf
+   * @param {object} shelves - The shelves object contains each shelf
+   * @param {function} onControlChange - The function that changes the selected option and updates the state
+   * @returns {object} the shelf rendered
+   */
   renderShelves = (shelves, onControlChange) => {
     let paint = []
     for (const shelf of shelves) {
@@ -29,6 +38,9 @@ class ListBooks extends Component {
     return paint
   }
 
+  /**
+   * @description Render the main page
+   */
   render() {
     let {shelves, onControlChange} = this.props
     return (
