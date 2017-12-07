@@ -27,7 +27,7 @@ class BooksApp extends React.Component {
   }
 
   /**
-   * @description Retrieves the books calling BooksApi getAll()
+   * @description Retrieve the books calling BooksApi getAll()
    * Updates the state with the retrieved books
    */
   retrieveBooks() {
@@ -142,7 +142,7 @@ class BooksApp extends React.Component {
   }
 
   /**
-   * @description Displays the components depending on the path
+   * @description Display the components depending on the path
    */
   render() {
     const {shelves, books} = this.state
